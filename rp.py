@@ -23,10 +23,15 @@ def pre_cogwheel(filename=filename):
 def get_logotype(opened_fail):
     """
 
-    return: logotype(name of new file)
+    return: logotype(name of new file in format: operator_date)
     """
-    pass
+    line = opened_fail.readline()
 
+    while not 'Реализация по исполнителю' in line:
+        line = opened_fail.readline()
+
+    i = line.find(':')
+    return line[(i + 2):].rstrip().replace(' ', '_').replace('.', '_')
 
 def get_check_number(opened_fail):
     """
