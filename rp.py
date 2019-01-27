@@ -3,6 +3,11 @@
 config = 'config.txt'
 filename = 'base/12-2.txt'
 
+"""
+{'logotype': {('name', 'price'): {'amount': float, 'position': [int, int]}}}
+"""
+result = {}
+
 
 def get_search_set(config_module=config):
     with open(config_module) as config:
@@ -14,12 +19,6 @@ def get_search_set(config_module=config):
         return result
 
 
-def pre_cogwheel(filename=filename):
-    for s in open(filename):
-        l = s.rstrip().split('|')
-        yield l
-
-
 def get_logotype(opened_fail):
     """
 
@@ -27,34 +26,85 @@ def get_logotype(opened_fail):
     """
     line = opened_fail.readline()
 
-    while not 'Реализация по исполнителю' in line:
+    while 'Реализация по исполнителю' not in line:
         line = opened_fail.readline()
 
     i = line.find(':')
     return line[(i + 2):].rstrip().replace(' ', '_').replace('.', '_')
 
-def get_check_number(opened_fail):
+
+def detective(content, sought_for, logotype, position):
+    """ Writing result on dict 'result' in following format:
+    {'logotype': {('name', float(price)): {'amount': float, 'position': [int, int]}}}
+
+    Keyword arguments:
+        content - list, with strings from 1 operation
+        sought_for - set, with strings(recipe required)
+        logotype - string, name of report
+        position - integer, number of current operation
+
+    return -> None
     """
+    for line in content:
+        if line[:40] in sought_for:
+            name, amount, price, t_price = line.strip().split('|')
+            key = name, float(price)
+            data = result.get(logotype)
+            if key in data.keys():
+                data[key]['amount'] += float(amount)
+                data[key]['position'].append(position)
+            else:
+                data[key] = {}
+                data[key]['amount'] = float(amount)
+                data[key]['position'] = [position]
 
-    return: check number or None
+
+def carver(opened_file, sought_for, logotype):
     """
-    pass
+    Main functionality:
+    * Looking for number of operation and return them
 
+    Keyword arguments:
+        opened_file
+        sought_for - set, with strings(recipe required)
+        logotype - string, name of report
 
-def cogwheel(opened_faile):
+    return -> operation number or None
     """
+    position = False
+    content = []
 
-    return: check number or None
+    while not position:
+        line = opened_file.readline()
+        if 'Общий итог' in line:
+            break
+        elif 'Документ :' in line:
+            position = int(line[40:46])
+        else:
+            content.append(line)
+
+    if position:
+        detective(content, sought_for, logotype, position)
+    return position
+
+
+def search_manager(file_name):
     """
-    pass
+    Keyword arguments:
+        file_name - string, name of file like 'base/12-2.txt'
 
-
-def parad_searcher(a):
+    return: None
     """
+    position = True
+    sought_for = get_search_set()
+    with open(file_name) as file:
+        logotype = get_logotype(file)
+        result[logotype] = {}
+        while position:
+            position = carver(file, sought_for, logotype)
 
-    return: dict result
-    """
-    pass
+
+
 
 
 
