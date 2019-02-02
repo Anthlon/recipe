@@ -43,99 +43,64 @@ class GetSearchSetTest(TestCase):
             self.assertEqual(finder.get_search_set(), expected)
 
 
-EXP_GIL = ['a\n', 'b\n', 'c\n', 'd\n', 'e\n', 'f\n', 'g\n']
-EASY_GIL = 'a\nb\nc\nd\ne\nf\ng\n'
-
-
-class GetIterLineTest(TestCase):
-
-    def test_gil_functionality(self, test_line=EASY_GIL, expected=EXP_GIL):
-        mocked_open = mock.mock_open(read_data=test_line)
-        with mock.patch('finder.open', mocked_open, create=True):
-            iter_line = finder.get_iter_line()
-            self.assertNotEqual(iter_line, expected)
-            unpack = [x for x in iter_line]
-            self.assertEqual(unpack, expected)
-
-
-EXP_GIT = [['a'], ['b', 'c'], ['d', 'e', 'f'], ['g'], ['h']]
-EASY_GIT = ['a\n', '\n', 'b\n', 'c\n', '\n', 'd\n', 'e\n', 'f\n', '\n', 'g\n', '\n', 'h\n', '\n']
-WITHOUT_NLS_GIT = ['a', '\n', 'b', 'c', '\n', 'd', 'e', 'f', '\n', 'g', '\n', 'h', '\n']
-WITHOUT_FINISH_NLS_GIT = ['a\n', '\n', 'b\n', 'c\n', '\n', 'd\n', 'e\n', 'f\n', '\n', 'g\n', '\n', 'h\n']
+EXP_GT = [['a'], ['b', 'c'], ['d', 'e', 'f'], ['g'], ['h']]
+EASY_GT = ['a\n', '\n', 'b\n', 'c\n', '\n', 'd\n', 'e\n', 'f\n', '\n', 'g\n', '\n', 'h\n', '\n']
+WITHOUT_NLS_GT = ['a', '\n', 'b', 'c', '\n', 'd', 'e', 'f', '\n', 'g', '\n', 'h', '\n']
+WITHOUT_FINISH_NLS_GT = ['a\n', '\n', 'b\n', 'c\n', '\n', 'd\n', 'e\n', 'f\n', '\n', 'g\n', '\n', 'h\n']
 
 
 @ddt.ddt
-class GetIterTabTest(TestCase):
+class GetTabsTest(TestCase):
     @ddt.data(
-        (EASY_GIT, EXP_GIT),
-        (WITHOUT_NLS_GIT, EXP_GIT),
-        (WITHOUT_FINISH_NLS_GIT, EXP_GIT)
+        (EASY_GT, EXP_GT),
+        (WITHOUT_NLS_GT, EXP_GT),
+        (WITHOUT_FINISH_NLS_GT, EXP_GT)
     )
     @ddt.unpack
-    def test_git_functionality(self, test_list, expected):
-        iter_tab = finder.get_iter_tab(test_list)
-        self.assertNotEqual(iter_tab, expected)
-        unpack = [x for x in iter_tab]
+    def test_get_tabs_functionality(self, test_lines, expected):
+        tabs = finder.get_tabs(test_lines)
+        self.assertNotEqual(tabs, expected)
+        unpack = [tab for tab in tabs]
         self.assertEqual(unpack, expected)
 
 
-EXP_GRT = '21_за_12-01-18'
-EASY_GRT = [
-    [
-        '      Стр. NNN                                            ',
-        '                   Реализация по исполнителю : 21 за 12.01.18'
-    ],
-    ['test_done']
+EXP_GETTITLE = '21_за_12-01-18'
+EASY_GETTITLE = [
+    '      Стр. NNN                                            ',
+    '                   Реализация по исполнителю : 21 за 12.01.18',
 ]
-MULTI_TAB_GRT = [
-    ['test'],
-    ['test'],
-    [
-        '      Стр. NNN                                            ',
-        '                   Реализация по исполнителю : 21 за 12.01.18'
-    ],
-    ['test_done']
+MULTI_LINES_GETTITLE = [
+    'test',
+    'test',
+    '      Стр. NNN                                            ',
+    '                   Реализация по исполнителю : 21 за 12.01.18',
+    'test_done',
 ]
-EMPTY_STRING_GRT =[
-    [''],
-    [''],
-    [
-        '      Стр. NNN                                            ',
-        '                   Реализация по исполнителю : 21 за 12.01.18'
-    ],
-    ['test_done']
+EMPTY_STRING_GETTITLE = [
+    '',
+    '',
+    '      Стр. NNN                                            ',
+    '                   Реализация по исполнителю : 21 за 12.01.18',
+    'test_done',
 ]
 TITLE_NOT_FOUNDED = [
-    [''],
-    [''],
-    [
-        '      Стр. NNN                                            '
-    ],
-    ['test_done']
+    '',
+    '',
+    '      Стр. NNN                                            ',
+    '                   Реализация по исполнителю : 21 за 12.01.18',
+    'test_done',
 ]
 
-
 @ddt.ddt
-class GetReportTitleTest(TestCase):
+class GetTitleTest(TestCase):
     @ddt.data(
-        (EASY_GRT, EXP_GRT),
-        (MULTI_TAB_GRT, EXP_GRT),
-        (EMPTY_STRING_GRT, EXP_GRT),
+        (EASY_GETTITLE, EXP_GETTITLE),
+        (MULTI_LINES_GETTITLE, EXP_GETTITLE),
+        (EMPTY_STRING_GETTITLE, EXP_GETTITLE),
     )
     @ddt.unpack
-    def test_grn_functionality(self, list_tab, expected):
-        self.assertEqual(finder.get_report_title(list_tab), expected)
-
-    @ddt.data(
-        (EASY_GRT, ['test_done']),
-        (MULTI_TAB_GRT, ['test_done']),
-        (EMPTY_STRING_GRT, ['test_done']),
-    )
-    @ddt.unpack
-    def test_grn_state_iter_obj(self, list_tab, expected):
-        iter_tab = iter(list_tab)
-        finder.get_report_title(iter_tab)
-        self.assertEqual(next(iter_tab), expected)
+    def test_get_title_functionality(self, tabs, expected):
+        self.assertEqual(finder.get_title(tabs), expected)
 
 
 EASY_GTN = '------------------- Опер.: 53 Документ :    10 -------------------         19.21'
@@ -191,157 +156,9 @@ class FinderTest(TestCase):
     )
     @ddt.unpack
     def test_finder_functionality(self, list_line, sought, expected):
-        pass
+        self.assertNotEqual(finder.finder(list_line, sought), expected)
+        unpack = [found for found in finder.finder(list_line, sought)] 
+        self.assertEqual(unpack, expected)
 
 
 
-# date_120118 = '''
-#
-#       Стр. NNN
-#                    Реализация по исполнителю : 21 за 12.01.18
-#
-# --------------------------------------------------------------------------------
-#           Hаименование товара           | Количество|     Цена    |     Сумма
-# --------------------------------------------------------------------------------
-# Пакет(уп)25х42 МАЙКА РБ                 |      1.000|         0.03|         0.03
-# ------------------- Опер.: 51 Документ :     1 -------------------          0.03
-#
-# БАД Биолектра Магнез.Дирек.пак.20 Лимон |      1.000|        11.59|        11.59
-# Элевит Пронаталь тб.100                 |      0.200|        68.10|        13.62'''
-#
-#
-# date_100119 = '''
-#
-#       Стр. NNN
-#                    Реализация по исполнителю : 31 за 10.01.19
-#
-# --------------------------------------------------------------------------------
-#           Hаименование товара           | Количество|     Цена    |     Сумма
-# --------------------------------------------------------------------------------
-# Пакет(уп)25/6х42(13мкм)белый б/логотипа |      1.000|         0.03|         0.03
-# ------------------- Опер.: 51 Документ :     1 -------------------          0.03
-#
-# Вольтарен 75мг/3мл амп.5 Словения       |      0.400|        21.15|         8.46
-# Омепразол-ЛФ 20мг капс.30               |      1.000|         2.26|         2.26
-# Магния цитрат+вит.В6 1120мг тб.30 БАД   |      2.000|         9.95|        19.90
-# Пакет(уп)25/6х42(13мкм)белый б/логотипа |      1.000|         0.03|         0.03
-# ------------------- Опер.: 53 Документ :     4 -------------------         30.65'''
-#
-#
-# @ddt.ddt
-# class GetLogotypeTest(TestCase):
-#     @ddt.data(
-#         (date_100119, '31_за_10_01_19', 'Пакет(уп)25/6х42(13мкм)белый б/логотипа |      1.000|         0.03|         0.03'),
-#         (date_120118, '21_за_12_01_18', 'Пакет(уп)25х42 МАЙКА РБ                 |      1.000|         0.03|         0.03'),
-#     )
-#     @ddt.unpack
-#     def test_main_functionality(self, test_string, expected_result, iter_status):
-#         mocked_file = mock.MagicMock()
-#         mocked_method = mock.MagicMock(side_effect=test_string.split('\n'))
-#         mocked_file.readline = mocked_method
-#         self.assertEqual(rp.get_logotype(mocked_file), expected_result)
-#         mocked_file.readline(); mocked_file.readline(); mocked_file.readline(); mocked_file.readline()
-#         self.assertEqual(mocked_file.readline(), iter_status)
-#
-#
-# data_content = [
-#     'Беродуал р-р д/инг 20мл                 |      1.000|        13.90|        13.90',
-#     'АЦЦ Лонг 0.6 тб/ш.10                    |      1.000|         8.91|         8.91',
-#     'Тобрекс 0.3% гл.к-ли 5мл                |      1.000|        10.71|        10.71',
-#     'Дексаметазон@ гл.к-ли 0.1% 5мл №1       |      1.000|         2.64|         2.64',
-#     'Детралекс тб.60                         |      1.000|        50.27|        50.27',
-#     'Никсар 20мг тб.30                       |      1.000|        18.15|        18.15',
-#     'Терафлю Лимон пор.пак.10                |      1.000|        15.40|        15.40',
-#     'Фромилид 0.5 тб.14                      |      0.500|        34.40|        17.20',
-#     'Фромилид 0.5 тб.14                      |      1.500|        34.40|        51.60',
-#     'Оспамокс 1г тб.12                       |      2.000|         8.52|        17.04',
-#     'Эутирокс 150мкг тб.100                  |      1.500|         9.40|        14.10',
-#     'Валериана-БЗМП 20мг тб.50               |      1.000|         0.93|         0.93',
-#     'Цитеал р-р 250мл                        |      1.000|        17.11|        17.11',
-#     'Беродуал р-р д/инг 20мл                 |      1.000|        13.90|        13.90',
-# ]
-#
-# data_search = {
-#     'Беродуал р-р д/инг 20мл                 ',
-#     'Никсар 20мг тб.30                       ',
-#     'Фромилид 0.5 тб.14                      ',
-#     'Эутирокс 150мкг тб.100                  ',
-# }
-#
-# expected_detective = {
-#     'test': {
-#         ('Беродуал р-р д/инг 20мл                 ', 13.9): {'amount': 2.0, 'position': [1, 1]},
-#         ('Никсар 20мг тб.30                       ', 18.15): {'amount': 1.0, 'position': [1]},
-#         ('Фромилид 0.5 тб.14                      ', 34.4): {'amount': 2.0, 'position': [1, 1]},
-#         ('Эутирокс 150мкг тб.100                  ', 9.40): {'amount': 1.5, 'position': [1]},
-#     }
-# }
-#
-#
-# @ddt.ddt
-# class DetectiveTest(TestCase):
-#     @ddt.data(
-#         (data_content, data_search, 'test', 1, expected_detective)
-#     )
-#     @ddt.unpack
-#     def test_main_functionality(self, content, sought_for, logotype, position, expected):
-#         rp.result[logotype] = {}
-#         rp.detective(content, sought_for, logotype, position)
-#         self.assertEqual(rp.result, expected)
-#
-#
-# caver_data_1 = [
-#     'БАД Биолектра Магнез.Дирек.пак.20 Лимон |      1.000|        11.59|        11.59',
-#     'Элевит Пронаталь тб.100                 |      0.200|        68.10|        13.62',
-#     'Пакет(уп)25х42 МАЙКА РБ                 |      1.000|         0.03|         0.03',
-#     '------------------- Опер.: 53 Документ :     4 -------------------         25.24',
-# ]
-# caver_data_2 = [
-#     'Эутирокс 75мкг тб.№100                  |      1.000|         6.97|         6.97',
-#     'Оспамокс 1г тб.12                       |      2.000|         8.52|        17.04',
-#     'Фромилид 0.5 тб.14                      |      0.500|        34.40|        17.20',
-#     'Фромилид 0.5 тб.14                      |      1.500|        34.40|        51.60',
-#     '------------------- Опер.: 53 Документ :    18 -------------------         92.81'
-# ]
-# caver_data_3 = [
-#     '--------------------------------------------------------------------------------',
-#     'Общий итог : (65 документов).......................................     1 791.02',
-# ]
-# caver_data_search = {
-#     'Беродуал р-р д/инг 20мл                 ',
-#     'Никсар 20мг тб.30                       ',
-#     'Фромилид 0.5 тб.14                      ',
-#     'Эутирокс 150мкг тб.100                  ',
-# }
-#
-#
-# @ddt.ddt
-# class CarverTest(TestCase):
-#     @ddt.data(
-#         (caver_data_1, caver_data_search, 'test', 4),
-#         (caver_data_2, caver_data_search, 'test', 18),
-#         (caver_data_3, caver_data_search, 'test', None),
-#     )
-#     @ddt.unpack
-#     def test_main_functionality(self, data, sought_for, logotype, expected):
-#         mocked_file = mock.MagicMock()
-#         mocked_method = mock.MagicMock(side_effect=data)
-#         mocked_file.readline = mocked_method
-#         detective = mock.MagicMock()
-#         with mock.patch('rp.detective', detective):
-#             self.assertEqual(rp.carver(mocked_file, sought_for, logotype), expected)
-#
-#     @ddt.data(
-#         (caver_data_1, caver_data_search, 'test', 4),
-#         (caver_data_2, caver_data_search, 'test', 18),
-#     )
-#     @ddt.unpack
-#     def test_called_detective_control(self, data, sought_for, logotype, expected):
-#         mocked_file = mock.MagicMock()
-#         mocked_method = mock.MagicMock(side_effect=data)
-#         mocked_file.readline = mocked_method
-#         detective = mock.MagicMock()
-#         with mock.patch('rp.detective', detective):
-#             rp.carver(mocked_file, sought_for, logotype)
-#             detective.assert_called_with(data[:-1], sought_for, logotype, expected)
-#
