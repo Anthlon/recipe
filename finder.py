@@ -4,25 +4,25 @@ A module organising and realising finding.
 Main function of module is a finder_manager()
 How to use - read docstring.
 
-{'title': 'oprator_date', 'body': {('name    ', price): {'tab_number': [], 'amount' : float}}}
+{'title': 'operator_date', 'body': {('name    ', price): {'tabs': [], 'amount' : float}}}
 """
 
 
 CONFIG = 'config.txt'
 
 
-def get_search_set(config_module=CONFIG):
+def get_search_list(config_module=CONFIG):
     """
     Create and return search set. Search set created based on the data from the config_module.
 
     :param config_module:
         a string name of the file with the search names
     :return:
-        a set with search strings(length 40)
+        a list with search strings(length 40)
     """
     with open(config_module) as config:
         data = config.readlines()
-        return {'{:<40}'.format(line.strip()[:40]) for line in data if line.strip()}
+    return ['{:<40}'.format(line.strip()[:40]) for line in data if line.strip()]
 
 
 def get_tabs(lines):
@@ -100,7 +100,7 @@ def get_body(tabs, sought):
     :param sought:
         a set with search strings(length 40)
     :return:
-        a dict, format {'body': {('name', price): {'tab_number': [], 'amount' : float}}}
+        a dict, format {'body': {('name', price): {'tabs': [], 'amount' : float}}}
     """
     body = {}
     for tab in tabs:
@@ -109,11 +109,11 @@ def get_body(tabs, sought):
         for key, amount in found:
             if key in body.keys():
                 body[key]['amount'] += amount
-                body[key]['tab_number'].append(tab_number)
+                body[key]['tabs'].append(tab_number)
             else:
                 body[key] = {}
                 body[key]['amount'] = amount
-                body[key]['tab_number'] = [tab_number]
+                body[key]['tabs'] = [tab_number]
     return body
 
 
@@ -123,16 +123,16 @@ def find_manager(file_name='base/12-2.txt', config=CONFIG):
 
     :param file_name:
         a string, name of file like 'base/12-2.txt'
-    :param config_module:
+    :param config:
         a string name of the file with the search names
     :return:
         a dict, format
-    {'title': 'oprator_date', 'body': {('name    ', price): {'tab_number': [], 'amount' : float}}}
+    {'title': 'oprator_date', 'body': {('name    ', price): {'tabs': [], 'amount' : float}}}
     """
     report = {}
     with open(file_name) as opened:
         lines = opened.readlines()
-    sought = get_search_set(config)
+    sought = {x for x in get_search_list(config)}
     tabs = get_tabs(lines)
     report['title'] = get_title(lines)
     report['body'] = get_body(tabs, sought)
