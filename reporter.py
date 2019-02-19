@@ -1,4 +1,5 @@
 """
+<<<<<<< HEAD
 The module provides output result of the program.
 
 Module working with data(named 'found') in fallowing format:
