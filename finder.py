@@ -13,7 +13,7 @@ CONFIG = 'config.txt'
 
 def get_search_list(config_module=CONFIG):
     """
-    Create and return search set. Search set created based on the data from the config_module.
+    Create and return search list. Search list created based on the data from the config_module.
 
     :param config_module:
         a string name of the file with the search names
@@ -127,7 +127,7 @@ def find_manager(file_name='base/12-2.txt', config=CONFIG):
         a string name of the file with the search names
     :return:
         a dict, format
-    {'title': 'oprator_date', 'body': {('name    ', price): {'tabs': [], 'amount' : float}}}
+    {'title': 'oprator_за_date', 'body': {('name    ', price): {'tabs': [], 'amount' : float}}}
     """
     report = {}
     with open(file_name) as opened:

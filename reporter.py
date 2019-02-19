@@ -10,13 +10,14 @@ from datetime import datetime
 from finder import get_search_list
 
 
-WIDTH = 80
+NAME_WIDTH = 40
+PRICE_WIDTH = 8
+AMOUNT_WIDTH = 8
+TABS_WIDTH = 40
+WIDTH = NAME_WIDTH + PRICE_WIDTH + AMOUNT_WIDTH + TABS_WIDTH + 3
 LINE = '-' * WIDTH
-NAME_WIDTH = '40'
-PRICE_WIDTH = '8'
-AMOUNT_WIDTH = '8'
-TABS_WIDTH = '21'
-FORMAT = '{0:^' + NAME_WIDTH + '}|{1:^' + PRICE_WIDTH + '}|{2:^' + AMOUNT_WIDTH + '}|{3:^' + TABS_WIDTH + '}'
+FORMAT = '{0:^' + str(NAME_WIDTH) + '}|{1:^' + str(PRICE_WIDTH) + '}|{2:^' \
+         + str(AMOUNT_WIDTH) + '}|{3:>' + str(TABS_WIDTH) + '}'
 
 
 def get_header(title):
@@ -25,6 +26,7 @@ def get_header(title):
 
     :param title:
         line consist of operator & date
+        format: 'operator_за_date'
     :return:
         list of lines assumed header for report
     """
@@ -62,7 +64,7 @@ def get_content(found):
         dict in following format:
         {'title': 'operator_date', 'body': {('name', price): {'tabs': [], 'amount' : float}}}
     :return:
-        multiline string consist of header & content & footer
+        multi lines string consist of header & content & footer
     """
     content = []
     for key in sorted(found['body'].keys(), key=sorter):
@@ -75,7 +77,7 @@ def get_content(found):
     return '\n'.join(x for x in report) + '\n'
 
 
-def get_report(found, output=None):
+def get_report(found, output=sys.stdout):
     """
     Displays report to output system
 
@@ -83,26 +85,32 @@ def get_report(found, output=None):
         dict in following format:
         {'title': 'operator_date', 'body': {('name', price): {'tabs': [], 'amount' : float}}}
     :param output:
-        name of file for saving report
+        opened file for writing
+        by default writing to stdout
     :return:
         None
     """
-    data = get_content(found)
-    if output:
-        with open(output, 'w') as report:
-            report.write(data)
-    else:
-        sys.stdout.write(data)
+    output.write(get_content(found))
 
 
-def auto_report(found):
+def report_manager(found, name=None, auto=False):
     """
-    Displays all reports to output text files in result package
+    Displays all reports to stdout or to output text files in result package
 
     :param found:
         dict in following format:
         {'title': 'operator_date', 'body': {('name', price): {'tabs': [], 'amount' : float}}}
+    :param name:
+        string, named file or path/named_file from result directory
+        file name will add extension .txt
+    :param auto:
+        bool True or False
     :return:
         None
     """
-    get_report(found, 'result/{}.txt'.format(found['title']))
+    if auto or name:
+        with open('result/{}.txt'.format(name or found['title']), 'w') as file:
+            get_report(found, file)
+    else:
+        get_report(found)
+
