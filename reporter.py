@@ -1,5 +1,4 @@
 """
-<<<<<<< HEAD
 The module provides output result of the program.
 
 Module working with data(named 'found') in fallowing format:
@@ -8,7 +7,7 @@ Module working with data(named 'found') in fallowing format:
 import sys
 from datetime import datetime
 
-from finder import get_search_list
+from finder import get_search_list, ENCODING
 
 
 NAME_WIDTH = 40
@@ -110,7 +109,7 @@ def report_manager(found, name=None, auto=False):
         None
     """
     if auto or name:
-        with open('result/{}.txt'.format(name or found['title']), 'w') as file:
+        with open('result/{}.txt'.format(name or found['title']), 'w', encoding=ENCODING) as file:
             get_report(found, file)
     else:
         get_report(found)

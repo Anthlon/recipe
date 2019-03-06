@@ -9,6 +9,7 @@ How to use - read docstring.
 
 
 CONFIG = 'config.txt'
+ENCODING = 'UTF-8'
 
 
 def get_search_list(config_module=CONFIG):
@@ -20,7 +21,7 @@ def get_search_list(config_module=CONFIG):
     :return:
         a list with search strings(length 40)
     """
-    with open(config_module) as config:
+    with open(config_module, encoding=ENCODING) as config:
         data = config.readlines()
     return ['{:<40}'.format(line.strip()[:40]) for line in data if line.strip()]
 
@@ -130,7 +131,7 @@ def find_manager(file_name='base/12-2.txt', config=CONFIG):
     {'title': 'oprator_за_date', 'body': {('name    ', price): {'tabs': [], 'amount' : float}}}
     """
     report = {}
-    with open(file_name) as opened:
+    with open(file_name, encoding=ENCODING) as opened:
         lines = opened.readlines()
     sought = {x for x in get_search_list(config)}
     tabs = get_tabs(lines)
